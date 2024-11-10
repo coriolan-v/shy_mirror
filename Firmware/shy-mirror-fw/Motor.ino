@@ -24,6 +24,9 @@ const uint8_t numberOfSensors = 8;
 
 int motorPosZones[numberOfSensors] = { 0, 4000, 8000, 12000, 16000, 20000, 24000, 28000 };
 
+int motorPosZonesPlus[numberOfSensors] = { 29500, 1500, 5500, 9500, 13500, 17500, 21500, 25500};
+int motorPosZonesMinus[numberOfSensors] = { -3000, -7000, -11000, -15000, -19000, -23000, -27000, -31000 };
+
 // Define a stepper and the pins it will use
 //AccelStepper stepper(AccelStepper::DRIVER, stepPin, directionPin);
 
@@ -37,15 +40,18 @@ void initMotor() {
 
   stepper.setMaxSpeed(8000);
   stepper.setAcceleration(5000);
-  stepper.moveTo(32000);
-}
 
+  stepper.setCurrentPosition(0);
+ // stepper.moveTo(32000);
+}
 
 
 void testZones() {
   for (int i = 0; i < numberOfSensors; i++) {
     Serial.print("Zone: ");
-    Serial.println(i);
+    Serial.print(i);
+    Serial.print(": ");
+    Serial.println(motorPosZones[i]);
     stepper.runToNewPosition(motorPosZones[i]);
   }
 }
@@ -94,6 +100,34 @@ void moveto(int newPos)
   //stepper.setAcceleration(2000);
   stepper.moveTo(newPos);
 }
+
+void move(int newPos){
+  stepper.move(newPos);
+}
+
+long diffPos = 0;
+long newTargetPos = 0;
+int computeShortestDistance(long targetPos)
+{
+  diffPos = targetPos - stepper.currentPosition();
+
+  if (diffPos > 16000){
+    newTargetPos = diffPos - 32000;
+  } else if (diffPos <= -16000){
+    newTargetPos = diffPos + 32000;
+  } else {
+    newTargetPos = diffPos;
+  }
+
+  Serial.print("Current pos: "); Serial.print(stepper.currentPosition());
+  Serial.print(", Target pos: "); Serial.print(targetPos);
+  Serial.print(", diffPos: "); Serial.print(diffPos);
+  Serial.print(", newTargetPos: "); Serial.println(newTargetPos);
+  
+  return newTargetPos;
+}
+
+
 
 void test(){
   if(millis() > 5000 && millis() < 10000){

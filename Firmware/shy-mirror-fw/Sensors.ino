@@ -16,7 +16,7 @@ int upperTreshld[sensorCount] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000
 const uint8_t numReadings = 2;
 
 // The Arduino pin connected to the XSHUT pin of each sensor.
-const uint8_t xshutPins[sensorCount] = { A0, A1, A2, A3, 9, 10, 11, 12 };
+const uint8_t xshutPins[sensorCount] = { 12, 11, 10, 9, A3, A2, A1, A0 };  //, A1, A2, A3, 9, 10, 11, 12 };
 
 VL53L1X sensors[sensorCount];
 
@@ -72,15 +72,15 @@ void initSensors() {
 
 int sensorReadOrder = 0;
 unsigned long stampStartRead = 0;
-bool startReadSensors = false;
+bool startReadSensors = true;
 void readSensorsDelay() {
 
   if (millis() - prevMill_sensorFPS >= readSensorSampling) {
     prevMill_sensorFPS = millis();
 
-   // stampStartRead = millis();
-    sensorReadOrder = 0;
-    startReadSensors = true;
+    //  // stampStartRead = millis();
+    //   sensorReadOrder = 0;
+    //   startReadSensors = true;
 
     //float raw_temp = analogRead(tempPin[i]) / 9.31;
 
@@ -100,24 +100,22 @@ void readSensorsDelay() {
     //Serial.print('\t');
   }
 
+  // if (startReadSensors == true) {
 
+  if (millis() - prevMill_sensorDelay >= sensorDelay) {
+    prevMill_sensorDelay = millis();
 
-  if (startReadSensors == true) {
+    sensorReadRaw[sensorReadOrder] = sensors[sensorReadOrder].read(false);
 
-    if (millis() - prevMill_sensorDelay >= sensorDelay) {
-      prevMill_sensorDelay = millis();
+    sensorReadMean[sensorReadOrder] += (sensorReadRaw[sensorReadOrder] - sensorReadMean[sensorReadOrder]) / numReadings;
 
-      sensorReadRaw[sensorReadOrder] = sensors[sensorReadOrder].read(false);
+    sensorReadOrder++;
 
-      sensorReadMean[sensorReadOrder] += (sensorReadRaw[sensorReadOrder] - sensorReadMean[sensorReadOrder]) / numReadings;
-
-      sensorReadOrder++;
-
-      if (sensorReadOrder == 8) {
-        startReadSensors = false;
-      }
+    if (sensorReadOrder == 8) {
+      sensorReadOrder = 0;
     }
   }
+  // }
 }
 
 void readSensors() {
@@ -146,6 +144,8 @@ void readSensors() {
   }
 }
 
+int old_targetZone = 0;
+
 void detectPeopleZones() {
 
   if (millis() - prevMill_sensorProcess >= readSensorProcess) {
@@ -154,17 +154,41 @@ void detectPeopleZones() {
     for (uint8_t i = 0; i < sensorCount; i++) {
       if (sensorReadMean[i] < lowerTreshold[i] && sensorReadMean[i] > 2) {
 
-        if (verboseSensor == true) {
-          printTime();
-          Serial.print("Person detected zone ");
-          Serial.print(i);
+        int targetZone = 8;
 
-          Serial.print(", moving to: ");
-          Serial.println(motorPosZones[i]);
+        if (i == 0) targetZone = 4;
+        if (i == 1) targetZone = 5;
+        if (i == 2) targetZone = 6;
+        if (i == 3) targetZone = 7;
+        if (i == 4) targetZone = 0;
+        if (i == 5) targetZone = 1;
+        if (i == 6) targetZone = 2;
+        if (i == 7) targetZone = 3;
+
+        if (targetZone != old_targetZone) {
+
+          old_targetZone = targetZone;
+
+          if (verboseSensor == true) {
+            printTime();
+            Serial.print("Person detected zone ");
+            Serial.print(i);
+            Serial.print(", moving to: ");
+            Serial.println(motorPosZonesPlus[targetZone]);
+          }
+
+          computeShortestDistance(motorPosZonesPlus[targetZone]);
+
+          moveto(motorPosZones[targetZone]);
         }
 
 
-        moveto(motorPosZones[i]);
+        // int randomDir = random(-1, 1);
+        // if(randomDir == -1){
+        //   move(4000);
+        // } else {
+        //   move(-4000);
+        // }
       }
     }
   }
