@@ -1,19 +1,22 @@
 // M4 express  itsy Bitsy
+#include "Funcs.h"
 
 void setup() {
   Serial.begin(115200);
-  // put your setup code here, to run once:
   
   initMotor();
 
-  motorHoming();
+  //motorHoming();
 
-  //initSensors();
+  initSensors();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  //readSensors();
+  readSensorsDelay();
 
- // detectPeopleZones();
+  //detectPeopleZones();
+ 
+
+  runMotor();
 }

@@ -1,0 +1,3 @@
+
+
+void moveto(int newPos);

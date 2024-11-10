@@ -67,8 +67,9 @@ void loop()
 {
   for (uint8_t i = 0; i < sensorCount; i++)
   {
-    Serial.print(sensors[i].read());
-    if (sensors[i].timeoutOccurred()) { Serial.print(" TIMEOUT"); }
+    Serial.print(sensors[i].read(false));
+    delay(5);
+    //if (sensors[i].timeoutOccurred()) { Serial.print(" TIMEOUT"); }
     Serial.print('\t');
   }
   Serial.println();

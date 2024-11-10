@@ -26,9 +26,16 @@ void setup()
 
 void loop()
 {
+  if(millis() > 5000 && millis() < 10000){
+     stepper.moveTo(0);
+  }
+
+  if(millis() > 10000){
+     stepper.moveTo(16000);
+  }
     // If at the end of travel go to the other end
-    if (stepper.distanceToGo() == 0)
-      stepper.moveTo(-stepper.currentPosition());
+    // if (stepper.distanceToGo() == 0)
+    //   stepper.moveTo(-stepper.currentPosition());
 
     stepper.run();
 }
