@@ -8,12 +8,12 @@ void setup() {
 
   motorHoming();
 
-  initSensors();
+  //initSensors();
 }
 
 void loop() {
   // put your main code here, to run repeatedly:
-  readSensors();
+  //readSensors();
 
-  detectPeopleZones();
+ // detectPeopleZones();
 }

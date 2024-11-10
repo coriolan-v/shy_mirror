@@ -18,6 +18,9 @@ const uint8_t sensorCount = 8;
 // The Arduino pin connected to the XSHUT pin of each sensor.
 const uint8_t xshutPins[sensorCount] = { A0, A1, A2, A3, 9, 10, 11, 12 };
 
+//{9, 10, 11, 12 };
+//{A0, A1, A2, A3 };
+
 VL53L1X sensors[sensorCount];
 
 void setup()

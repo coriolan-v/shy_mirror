@@ -16,10 +16,12 @@ AccelStepper stepper(AccelStepper::DRIVER, stepPin, directionPin);
 
 void setup()
 {  
+  pinMode(enPin, OUTPUT);
+  digitalWrite(enPin, HIGH);
   // Change these to suit your stepper if you want
-  stepper.setMaxSpeed(24000);
-  stepper.setAcceleration(24000);
-  stepper.moveTo(60000);
+  stepper.setMaxSpeed(6000);
+  stepper.setAcceleration(2000);
+  stepper.moveTo(32000);
 }
 
 void loop()

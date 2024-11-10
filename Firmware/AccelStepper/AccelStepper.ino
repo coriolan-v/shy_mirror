@@ -16,6 +16,8 @@ int stepperPositionLib = 0;
 // Define a stepper and the pins it will use
 AccelStepper stepper(AccelStepper::DRIVER, stepPin, directionPin);
 
+#define microstep 32 // 1 turn of big cog = 32000
+
 void setup()
 {  
   pinMode(HallSensor, INPUT_PULLUP);
@@ -27,9 +29,9 @@ void setup()
 
 
 
- stepper.setMaxSpeed(3000);
+ stepper.setMaxSpeed(6000);
   stepper.setAcceleration(2000);
-  stepper.moveTo(10000);
+  stepper.moveTo(32000); // 32000 = 1 turn
 
   //homing();
 }

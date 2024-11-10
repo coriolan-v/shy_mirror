@@ -79,10 +79,12 @@ void motorHoming() {
   stepper.setCurrentPosition(0);
   stepper.setMaxSpeed(3000);
   stepper.setAcceleration(2000);
-  stepper.moveTo(3200 * 5);
+  stepper.moveTo(3200 * 10);
 
   while (digitalRead(HallSensor) == HIGH) {
     stepper.run();
+    Serial.print(digitalRead(HallSensor));
+    Serial.print("/");
     Serial.println(stepper.currentPosition());
   }
 
