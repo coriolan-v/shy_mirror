@@ -24,8 +24,12 @@ const uint8_t numberOfSensors = 8;
 
 int motorPosZones[numberOfSensors] = { 0, 4000, 8000, 12000, 16000, 20000, 24000, 28000 };
 
-int motorPosZonesPlus[numberOfSensors] = { 29500, 1500, 5500, 9500, 13500, 17500, 21500, 25500};
+int motorPosZonesPlus[numberOfSensors] = { 29500, 1500, 5500, 9500, 13500, 17500, 21500, 25500 };
 int motorPosZonesMinus[numberOfSensors] = { -3000, -7000, -11000, -15000, -19000, -23000, -27000, -31000 };
+
+int homePosition = 1500;
+
+unsigned long stampMill_return;
 
 // Define a stepper and the pins it will use
 //AccelStepper stepper(AccelStepper::DRIVER, stepPin, directionPin);
@@ -42,7 +46,7 @@ void initMotor() {
   stepper.setAcceleration(5000);
 
   stepper.setCurrentPosition(0);
- // stepper.moveTo(32000);
+  // stepper.moveTo(32000);
 }
 
 
@@ -94,47 +98,92 @@ void motorHoming() {
   Serial.println("Homing Complete");
 }
 
-void moveto(int newPos)
-{
+void moveto(int newPos) {
   //stepper.setMaxSpeed(6000);
   //stepper.setAcceleration(2000);
   stepper.moveTo(newPos);
 }
 
-void move(int newPos){
+void move(int newPos) {
   stepper.move(newPos);
 }
 
 long diffPos = 0;
 long newTargetPos = 0;
-int computeShortestDistance(long targetPos)
-{
+int computeShortestDistance(long targetPos) {
   diffPos = targetPos - stepper.currentPosition();
 
-  if (diffPos > 16000){
+  if (diffPos > 16000) {
     newTargetPos = diffPos - 32000;
-  } else if (diffPos <= -16000){
+  } else if (diffPos <= -16000) {
     newTargetPos = diffPos + 32000;
   } else {
     newTargetPos = diffPos;
   }
 
-  Serial.print("Current pos: "); Serial.print(stepper.currentPosition());
-  Serial.print(", Target pos: "); Serial.print(targetPos);
-  Serial.print(", diffPos: "); Serial.print(diffPos);
-  Serial.print(", newTargetPos: "); Serial.println(newTargetPos);
-  
+  Serial.print("Current pos: ");
+  Serial.print(stepper.currentPosition());
+  Serial.print(", Target pos: ");
+  Serial.print(targetPos);
+  Serial.print(", diffPos: ");
+  Serial.print(diffPos);
+  Serial.print(", newTargetPos: ");
+  Serial.println(newTargetPos);
+
   return newTargetPos;
+}
+
+unsigned long prevMill_animation = 0;
+
+int randomPos[10] = {-8000, -4000, -3000, -2000, 0, 1000, 2000, 3000, 4000, 6000};
+
+bool personDetected = false;
+
+void lonelyAnimations() {
+
+  if (personDetected == false) {
+    if (millis() - stampMill_return > 10000 && millis() - stampMill_return < 11000) {
+      // stampMill_return = millis();
+      stepper.moveTo(homePosition);
+
+      Serial.println("NO ONE, MOVING TO HOME POS");
+    }
+
+    if (millis() - stampMill_return > 11000 && millis() - prevMill_animation > 30000) {
+       prevMill_animation = millis();
+
+      int newRandomPos = randomPos[random(0, 10)];
+
+      stepper.moveTo(newRandomPos);
+
+      Serial.print("NO ONE, MOVING TO RANDOM POS "); Serial.println(newRandomPos);
+    }
+  }
+}
+
+
+unsigned long prevMill_calibration = 0;
+unsigned long calibrationTimeMinute = 5;
+void calibration()
+{
+  if(millis() - prevMill_calibration >= (calibrationTimeMinute * 60000)){
+      prevMill_calibration = millis(); 
+
+      Serial.println("HOMING TIME");
+
+      motorHoming();
+  }
 }
 
 
 
-void test(){
-  if(millis() > 5000 && millis() < 10000){
-     stepper.moveTo(4888);
+
+void test() {
+  if (millis() > 5000 && millis() < 10000) {
+    stepper.moveTo(4888);
   }
 
-  if(millis() > 10000){
-     stepper.moveTo(16000);
+  if (millis() > 10000) {
+    stepper.moveTo(16000);
   }
 }

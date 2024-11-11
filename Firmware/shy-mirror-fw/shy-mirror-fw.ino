@@ -21,6 +21,10 @@ void loop() {
  
   runMotor();
 
+  lonelyAnimations();
+
+  calibration();
+
  // readSerial();
 }
 

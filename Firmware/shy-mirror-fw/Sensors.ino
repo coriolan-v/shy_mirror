@@ -7,10 +7,10 @@ bool verboseSensor = true;
 // The number of sensors in system.
 const uint8_t sensorCount = 8;
 
-#define commonDistance 150
+#define commonDistance 1000
 
 // Distance in mm
-int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, commonDistance, commonDistance, commonDistance, commonDistance, commonDistance };
+int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, commonDistance, 150, commonDistance, 150, 150 };
 int upperTreshld[sensorCount] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000 };
 
 const uint8_t numReadings = 2;
@@ -30,6 +30,7 @@ unsigned int sensorDelay = 10;
 
 unsigned long prevMill_sensorProcess;
 unsigned int readSensorProcess = 25;
+
 
 void initSensors() {
   //while (!Serial) {}
@@ -146,6 +147,7 @@ void readSensors() {
 
 int old_targetZone = 0;
 
+
 void detectPeopleZones() {
 
   if (millis() - prevMill_sensorProcess >= readSensorProcess) {
@@ -155,6 +157,8 @@ void detectPeopleZones() {
       if (sensorReadMean[i] < lowerTreshold[i] && sensorReadMean[i] > 2) {
 
         int targetZone = 8;
+
+        personDetected = true;
 
         if (i == 0) targetZone = 4;
         if (i == 1) targetZone = 5;
@@ -169,6 +173,8 @@ void detectPeopleZones() {
 
           old_targetZone = targetZone;
 
+          stampMill_return = millis();
+
           if (verboseSensor == true) {
             printTime();
             Serial.print("Person detected zone ");
@@ -177,7 +183,7 @@ void detectPeopleZones() {
             Serial.println(motorPosZonesPlus[targetZone]);
           }
 
-          computeShortestDistance(motorPosZonesPlus[targetZone]);
+          //(motorPosZonesPlus[targetZone]);
 
           moveto(motorPosZones[targetZone]);
         }
@@ -191,6 +197,10 @@ void detectPeopleZones() {
         // }
       }
     }
+  }
+
+  if(millis() - stampMill_return > 10000){
+    personDetected = false;
   }
 }
 
