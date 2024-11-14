@@ -3,10 +3,12 @@
 
 void setup() {
   Serial.begin(115200);
+
+ // while(Serial) {};
   
   initMotor();
 
-  //motorHoming();
+  motorHoming();
 
   initSensors();
 

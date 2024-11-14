@@ -7,10 +7,10 @@ bool verboseSensor = true;
 // The number of sensors in system.
 const uint8_t sensorCount = 8;
 
-#define commonDistance 1000
+#define commonDistance 1100
 
 // Distance in mm
-int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, commonDistance, 150, commonDistance, 150, 150 };
+int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, 500, commonDistance, commonDistance, commonDistance, 800 };
 int upperTreshld[sensorCount] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000 };
 
 const uint8_t numReadings = 2;

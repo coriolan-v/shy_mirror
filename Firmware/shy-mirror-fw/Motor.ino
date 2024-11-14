@@ -24,7 +24,7 @@ const uint8_t numberOfSensors = 8;
 
 int motorPosZones[numberOfSensors] = { 0, 4000, 8000, 12000, 16000, 20000, 24000, 28000 };
 
-int motorPosZonesPlus[numberOfSensors] = { 29500, 1500, 5500, 9500, 13500, 17500, 21500, 25500 };
+int motorPosZonesPlus[numberOfSensors] = { -3000, 1500, 5500, 9500, 13500, 17500, 21500, 25500 };
 int motorPosZonesMinus[numberOfSensors] = { -3000, -7000, -11000, -15000, -19000, -23000, -27000, -31000 };
 
 int homePosition = 1500;
@@ -84,6 +84,8 @@ void motorHoming() {
   stepper.setAcceleration(2000);
   stepper.moveTo(32000);
 
+  Serial.println("start HOMING");
+
   while (digitalRead(HallSensor) == HIGH) {
     stepper.run();
     Serial.print(digitalRead(HallSensor));
@@ -96,6 +98,9 @@ void motorHoming() {
   stepper.setCurrentPosition(0);
   stepperPositionLib = 0;
   Serial.println("Homing Complete");
+
+  stepper.setMaxSpeed(6000);
+  stepper.setAcceleration(4000);
 }
 
 void moveto(int newPos) {
@@ -163,7 +168,7 @@ void lonelyAnimations() {
 
 
 unsigned long prevMill_calibration = 0;
-unsigned long calibrationTimeMinute = 5;
+unsigned long calibrationTimeMinute = 30;
 void calibration()
 {
   if(millis() - prevMill_calibration >= (calibrationTimeMinute * 60000)){
