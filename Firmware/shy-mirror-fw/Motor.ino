@@ -42,10 +42,10 @@ void initMotor() {
   pinMode(enPin, OUTPUT);
   digitalWrite(enPin, HIGH);
 
-  stepper.setMaxSpeed(8000);
-  stepper.setAcceleration(5000);
+  //stepper.setMaxSpeed(8000);
+ // stepper.setAcceleration(5000);
 
-  stepper.setCurrentPosition(0);
+ // stepper.setCurrentPosition(0);
   // stepper.moveTo(32000);
 }
 
@@ -80,8 +80,9 @@ void runMotor() {
 
 void motorHoming() {
   stepper.setCurrentPosition(0);
-  stepper.setMaxSpeed(3000);
-  stepper.setAcceleration(2000);
+
+  stepper.setMaxSpeed(5000);
+  stepper.setAcceleration(3000);
   stepper.moveTo(32000);
 
   Serial.println("start HOMING");
@@ -99,8 +100,8 @@ void motorHoming() {
   stepperPositionLib = 0;
   Serial.println("Homing Complete");
 
-  stepper.setMaxSpeed(6000);
-  stepper.setAcceleration(4000);
+  stepper.setMaxSpeed(7000);
+  stepper.setAcceleration(5000);
 }
 
 void moveto(int newPos) {
