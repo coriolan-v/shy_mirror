@@ -100,8 +100,8 @@ void motorHoming() {
   stepperPositionLib = 0;
   Serial.println("Homing Complete");
 
-  stepper.setMaxSpeed(7000);
-  stepper.setAcceleration(5000);
+  stepper.setMaxSpeed(9000);
+  stepper.setAcceleration(7000);
 }
 
 void moveto(int newPos) {

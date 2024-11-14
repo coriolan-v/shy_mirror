@@ -10,10 +10,10 @@ const uint8_t sensorCount = 8;
 #define commonDistance 1100
 
 // Distance in mm
-int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, 500, commonDistance, commonDistance, commonDistance, 800 };
+int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, 500, commonDistance, 500, commonDistance, 800 };
 int upperTreshld[sensorCount] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000 };
 
-const uint8_t numReadings = 2;
+const uint8_t numReadings = 4;
 
 // The Arduino pin connected to the XSHUT pin of each sensor.
 const uint8_t xshutPins[sensorCount] = { 12, 11, 10, 9, A3, A2, A1, A0 };  //, A1, A2, A3, 9, 10, 11, 12 };
@@ -147,6 +147,9 @@ void readSensors() {
 
 int old_targetZone = 0;
 
+unsigned long stampMill_detect[sensorCount];
+
+bool personDetectStamp[sensorCount];
 
 void detectPeopleZones() {
 
@@ -159,6 +162,9 @@ void detectPeopleZones() {
         int targetZone = 8;
 
         personDetected = true;
+
+        //stampMill_detect[i] = millis();
+        //personDetectStamp[i] = true;
 
         if (i == 0) targetZone = 4;
         if (i == 1) targetZone = 5;
@@ -175,17 +181,24 @@ void detectPeopleZones() {
 
           stampMill_return = millis();
 
-          if (verboseSensor == true) {
-            printTime();
-            Serial.print("Person detected zone ");
-            Serial.print(i);
-            Serial.print(", moving to: ");
-            Serial.println(motorPosZonesPlus[targetZone]);
+          if (millis() - stampMill_detect[i] > 2000) {
+
+            moveto(motorPosZones[targetZone]);
+
+            stampMill_detect[i] = millis();
+            personDetectStamp[i] = false;
+            if (verboseSensor) {
+              printTime();
+              Serial.print("Person detected zone ");
+              Serial.print(i);
+              Serial.print(", Current motor pos: ");
+              Serial.print(stepper.currentPosition());
+              Serial.print(", moving to: ");
+              Serial.println(motorPosZonesPlus[targetZone]);
+            }
           }
 
           //(motorPosZonesPlus[targetZone]);
-
-          moveto(motorPosZones[targetZone]);
         }
 
 
@@ -199,7 +212,7 @@ void detectPeopleZones() {
     }
   }
 
-  if(millis() - stampMill_return > 10000){
+  if (millis() - stampMill_return > 10000) {
     personDetected = false;
   }
 }
