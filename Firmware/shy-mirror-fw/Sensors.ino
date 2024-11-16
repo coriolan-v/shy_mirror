@@ -157,7 +157,7 @@ void detectPeopleZones() {
     prevMill_sensorProcess = millis();
 
     for (uint8_t i = 0; i < sensorCount; i++) {
-      if (sensorReadMean[i] < lowerTreshold[i] && sensorReadMean[i] > 2) {
+      if (sensorReadMean[i] < lowerTreshold[i] && sensorReadMean[i] > 2 && VL53L1X::rangeStatusToString(sensors[i].ranging_data.range_status) == "range valid") {
 
         int targetZone = 8;
 

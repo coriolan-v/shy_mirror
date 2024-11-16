@@ -16,12 +16,14 @@ well.
 const uint8_t sensorCount = 8;
 
 // The Arduino pin connected to the XSHUT pin of each sensor.
-const uint8_t xshutPins[sensorCount] = { A0, A1, A2, A3, 9, 10, 11, 12 };
+const uint8_t xshutPins[sensorCount] = { 12, 11, 10, 9, A3, A2, A1, A0 };
 
 //{9, 10, 11, 12 };
 //{A0, A1, A2, A3 };
 
 VL53L1X sensors[sensorCount];
+
+ enum DistanceMode { Short, Medium, Long, Unknown };
 
 void setup()
 {
@@ -59,7 +61,12 @@ void setup()
     // the default). To make it simple, we'll just count up from 0x2A.
     sensors[i].setAddress(0x2A + i);
 
-    sensors[i].startContinuous(50);
+    sensors[i].setDistanceMode(VL53L1X::Medium);
+  sensors[i].setMeasurementTimingBudget(500);
+
+    sensors[i].startContinuous(100);
+
+    //sensors[i].setDistanceMode(Short);
   }
 }
 
@@ -67,10 +74,25 @@ void loop()
 {
   for (uint8_t i = 0; i < sensorCount; i++)
   {
-    Serial.print(sensors[i].read(false));
-    delay(5);
+    //Serial.print(sensors[i].read());
+
+    sensors[i].read();//
+
+     Serial.print("range: ");
+  Serial.print(sensors[i].ranging_data.range_mm);
+  Serial.print("\tstatus: ");
+  Serial.print(VL53L1X::rangeStatusToString(sensors[i].ranging_data.range_status));
+  if(VL53L1X::rangeStatusToString(sensors[i].ranging_data.range_status) == "range valid") {
+    Serial.println("YAY");
+  }
+  Serial.print("\tpeak signal: ");
+  Serial.print(sensors[i].ranging_data.peak_signal_count_rate_MCPS);
+  Serial.print("\tambient: ");
+  Serial.print(sensors[i].ranging_data.ambient_count_rate_MCPS);
+    //Serial.print(sensors[i].distance());
+    delay(10);
     //if (sensors[i].timeoutOccurred()) { Serial.print(" TIMEOUT"); }
-    Serial.print('\t');
+    Serial.print(" ");
   }
   Serial.println();
 }
