@@ -10,7 +10,8 @@ const uint8_t sensorCount = 8;
 #define commonDistance 1100
 
 // Distance in mm
-int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, 500, commonDistance, 500, commonDistance, 800 };
+//= { commonDistance, commonDistance, commonDistance, 500, commonDistance, 500, commonDistance, 800 };
+int lowerTreshold[sensorCount] = { commonDistance, commonDistance, commonDistance, commonDistance, commonDistance, commonDistance, commonDistance, commonDistance };
 int upperTreshld[sensorCount] = { 2000, 2000, 2000, 2000, 2000, 2000, 2000, 2000 };
 
 const uint8_t numReadings = 4;
